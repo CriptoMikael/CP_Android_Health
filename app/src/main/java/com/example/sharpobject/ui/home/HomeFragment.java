@@ -2,6 +2,7 @@ package com.example.sharpobject.ui.home;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -20,9 +21,15 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.sharpobject.R;
 import com.example.sharpobject.databinding.FragmentHomeBinding;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,6 +41,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -59,6 +68,8 @@ public class HomeFragment extends Fragment {
     private int lowString;
     private int pulseString;
     private String activityString;
+
+    JSONObject json;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -217,7 +228,7 @@ public class HomeFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void sendAllData() {
+    protected void sendAllData() {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm dd-MM-yyyy");
             Date parsedDate = dateFormat.parse(dateField.getText().toString());
@@ -233,7 +244,7 @@ public class HomeFragment extends Fragment {
         pulseString = Integer.parseInt(pulse.getText().toString());
         activityString = activity.getText().toString();
 
-        JSONObject json = new JSONObject();
+        json = new JSONObject();
         try {
             json.put("date", timeStamp);
             json.put("modelName", modelString);
@@ -243,6 +254,82 @@ public class HomeFragment extends Fragment {
             json.put("activity", activityString);
         } catch (Exception e) {
             System.out.println(e);
+        }
+
+        /*try {
+            URL url = new URL("https://ec2-3-15-18-180.us-east-2.compute.amazonaws.com:5000/transactions");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.connect();
+
+            DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+            os.writeBytes(URLEncoder.encode(json.toString(), "UTF-8"));
+
+            os.flush();
+            os.close();
+
+            Log.i("STATUS", String.valueOf(conn.getResponseCode()));
+            Log.i("MSG" , conn.getResponseMessage());
+
+            conn.disconnect();
+        } catch (Exception e) {
+            System.out.println(e);
+        }*/
+
+        try {
+            HttpTask asnyc = new HttpTask();
+            asnyc.execute();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+
+    }
+
+    class HttpTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            URL url = null;
+            try {
+                url = new URL("https://ec2-3-15-18-180.us-east-2.compute.amazonaws.com:5000/transactions");
+                HttpURLConnection connection = null;
+
+                connection = (HttpURLConnection) url.openConnection();
+                int code = connection.getResponseCode();
+                //connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json");
+
+                if (json != null) {
+                    DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+                    outputStream.writeBytes(json.toString());
+                    outputStream.flush();
+                    outputStream.close();
+                }
+
+                int responseCode = connection.getResponseCode();
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 
