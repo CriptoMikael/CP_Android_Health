@@ -19,10 +19,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/sendButton" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName3"
+        android:id="@+id/activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
@@ -30,50 +30,50 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/sendButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView8"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumberDecimal3" />
+        app:layout_constraintStart_toEndOf="@+id/activityString"
+        app:layout_constraintTop_toBottomOf="@+id/pulse" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/activityString"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="110dp"
         android:text="Активность"
         app:layout_constraintBottom_toTopOf="@+id/speakButton"
-        app:layout_constraintEnd_toStartOf="@+id/editTextTextPersonName3"
+        app:layout_constraintEnd_toStartOf="@+id/activity"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+        app:layout_constraintTop_toBottomOf="@+id/pulseString" />
 
     <EditText
-        android:id="@+id/editTextNumberDecimal3"
+        android:id="@+id/pulse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="38dp"
         android:ems="10"
         android:inputType="numberDecimal"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName3"
+        app:layout_constraintBottom_toTopOf="@+id/activity"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumberDecimal2" />
+        app:layout_constraintStart_toEndOf="@+id/pulseString"
+        app:layout_constraintTop_toBottomOf="@+id/lowValue" />
 
     <TextView
-        android:id="@+id/textView7"
+        android:id="@+id/pulseString"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="19dp"
         android:text="Пульс"
-        app:layout_constraintBottom_toTopOf="@+id/textView8"
-        app:layout_constraintEnd_toStartOf="@+id/editTextNumberDecimal3"
+        app:layout_constraintBottom_toTopOf="@+id/activityString"
+        app:layout_constraintEnd_toStartOf="@+id/pulse"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintTop_toBottomOf="@+id/lowValueString" />
 
     <EditText
-        android:id="@+id/editTextDate2"
+        android:id="@+id/dateField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -81,61 +81,61 @@
         android:layout_marginBottom="21dp"
         android:ems="10"
         android:inputType="date"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintBottom_toTopOf="@+id/modelName"
+        app:layout_constraintStart_toEndOf="@+id/dateString"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/modelString"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="17dp"
         android:text="Модель тонометра"
-        app:layout_constraintBottom_toTopOf="@+id/textView5"
-        app:layout_constraintEnd_toStartOf="@+id/editTextTextPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/highValueString"
+        app:layout_constraintEnd_toStartOf="@+id/modelName"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/dateString" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/highValueString"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="9dp"
         android:text="Верхнее давление"
-        app:layout_constraintBottom_toTopOf="@+id/textView6"
-        app:layout_constraintEnd_toStartOf="@+id/editTextNumberDecimal"
+        app:layout_constraintBottom_toTopOf="@+id/lowValueString"
+        app:layout_constraintEnd_toStartOf="@+id/highValue"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/modelString" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/lowValueString"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="12dp"
         android:text="Нижнее давление"
-        app:layout_constraintBottom_toTopOf="@+id/textView7"
-        app:layout_constraintEnd_toStartOf="@+id/editTextNumberDecimal3"
+        app:layout_constraintBottom_toTopOf="@+id/pulseString"
+        app:layout_constraintEnd_toStartOf="@+id/pulse"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/highValueString" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/dateString"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="55dp"
         android:layout_marginBottom="15dp"
         android:text="Дата"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toStartOf="@+id/editTextTextPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/modelString"
+        app:layout_constraintEnd_toStartOf="@+id/modelName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/modelName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
@@ -143,37 +143,37 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
-        app:layout_constraintBottom_toTopOf="@+id/editTextNumberDecimal"
+        app:layout_constraintBottom_toTopOf="@+id/highValue"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/editTextDate2" />
+        app:layout_constraintStart_toEndOf="@+id/modelString"
+        app:layout_constraintTop_toBottomOf="@+id/dateField" />
 
     <EditText
-        android:id="@+id/editTextNumberDecimal"
+        android:id="@+id/highValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="29dp"
         android:ems="10"
         android:inputType="numberDecimal"
-        app:layout_constraintBottom_toTopOf="@+id/editTextNumberDecimal2"
+        app:layout_constraintBottom_toTopOf="@+id/lowValue"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
+        app:layout_constraintStart_toEndOf="@+id/highValueString"
+        app:layout_constraintTop_toBottomOf="@+id/modelName" />
 
     <EditText
-        android:id="@+id/editTextNumberDecimal2"
+        android:id="@+id/lowValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:ems="10"
         android:inputType="numberDecimal"
-        app:layout_constraintBottom_toTopOf="@+id/editTextNumberDecimal3"
-        app:layout_constraintStart_toEndOf="@+id/textView6"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumberDecimal" />
+        app:layout_constraintBottom_toTopOf="@+id/pulse"
+        app:layout_constraintStart_toEndOf="@+id/lowValueString"
+        app:layout_constraintTop_toBottomOf="@+id/highValue" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/sendButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="43dp"
@@ -181,7 +181,7 @@
         android:text="Отправить"
         app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
+        app:layout_constraintTop_toBottomOf="@+id/activity" />
 
     <Button
         android:id="@+id/speakButton"
@@ -193,6 +193,6 @@
         app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        app:layout_constraintTop_toBottomOf="@+id/activityString" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
