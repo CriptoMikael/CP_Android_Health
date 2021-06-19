@@ -1,6 +1,7 @@
 package com.example.sharpobject.ui.home;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,33 +23,25 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.sharpobject.R;
 import com.example.sharpobject.databinding.FragmentHomeBinding;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -81,6 +74,9 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        writeFile("Omron M1 Classic");
+        modelString = readFile();
+
         homeViewModel =
                 new ViewModelProvider(this).get(HomeViewModel.class);
 
@@ -95,15 +91,9 @@ public class HomeFragment extends Fragment {
         activity = (EditText) rootView.findViewById(R.id.activity);
 
         mVoiceInputTv.setVisibility(View.INVISIBLE);
-        dateField.setVisibility(View.INVISIBLE);
-        modelName.setVisibility(View.INVISIBLE);
-        highValue.setVisibility(View.INVISIBLE);
-        lowValue.setVisibility(View.INVISIBLE);
-        pulse.setVisibility(View.INVISIBLE);
-        activity.setVisibility(View.INVISIBLE);
 
         timeStamp = 0L;
-        modelString = new String("");
+        //modelString = new String("");
         highString = 0;
         lowString = 0;
         pulseString = 0;
@@ -113,6 +103,14 @@ public class HomeFragment extends Fragment {
         lowValue.setText("0");
         pulse.setText("0");
         activity.setText("");
+
+        Date datedate = Calendar.getInstance().getTime();
+        timeStamp = datedate.getTime();
+        DateFormat dateFormat = new SimpleDateFormat("kk:mm dd-MM-yyyy");
+        String date = dateFormat.format(datedate);
+        dateField.setText(date);
+
+        modelName.setText(modelString);
 
         speakButton = (Button) rootView.findViewById(R.id.speakButton);
         speakButton.setOnClickListener(new View.OnClickListener() {
@@ -130,11 +128,41 @@ public class HomeFragment extends Fragment {
                 sendAllData();
                 Toast toast = Toast.makeText(getActivity(), "Показания переданы врачу", Toast.LENGTH_LONG);
                 toast.show();
+                writeFile(modelString);
                 clearFields();
             }
         });
-
         return rootView;
+    }
+
+    public void writeFile(String data) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(getActivity().openFileOutput("config.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        } catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+
+    public String readFile() {
+        String string = "";
+        try {
+            InputStream inputStream = getActivity().openFileInput("config.txt");
+            if (inputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                // modelString
+                StringBuilder stringBuilder = new StringBuilder();
+                string = bufferedReader.readLine();
+                inputStream.close();
+            }
+        } catch (FileNotFoundException e) {
+            Log.e("login activity", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("login activity", "Can not read file: " + e.toString());
+        }
+        return string;
     }
 
     private void startVoiceInput() {
@@ -155,13 +183,6 @@ public class HomeFragment extends Fragment {
         switch (requestCode) {
             case REQ_CODE_SPEECH_INPUT: {
                 if (resultCode == RESULT_OK && null != data) {
-                    dateField.setVisibility(View.VISIBLE);
-                    modelName.setVisibility(View.VISIBLE);
-                    highValue.setVisibility(View.VISIBLE);
-                    lowValue.setVisibility(View.VISIBLE);
-                    pulse.setVisibility(View.VISIBLE);
-                    activity.setVisibility(View.VISIBLE);
-
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     parseValue(result.get(0));
                     mVoiceInputTv.setText(result.get(0));
@@ -174,7 +195,6 @@ public class HomeFragment extends Fragment {
                 }
                 break;
             }
-
         }
     }
 
@@ -264,8 +284,7 @@ public class HomeFragment extends Fragment {
 
         json = new JSONObject();
         try {
-            //json.put("date", timeStamp*1000);
-            json.put("date", 1624099204);
+            json.put("date", timeStamp / 1000);
             json.put("modelName", modelString);
             json.put("highValue", highString);
             json.put("lowValue", lowString);
@@ -314,7 +333,6 @@ public class HomeFragment extends Fragment {
 
     public String performPostCall(String requestURL,
                                   HashMap<String, String> postDataParams) {
-
         URL url;
         String response = "";
         try {

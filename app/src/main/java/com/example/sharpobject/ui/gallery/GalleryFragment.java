@@ -1,6 +1,7 @@
 package com.example.sharpobject.ui.gallery;
 
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,69 +22,136 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 
 import com.example.sharpobject.R;
 import com.example.sharpobject.databinding.FragmentGalleryBinding;
+import com.example.sharpobject.ui.home.HomeFragment;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class GalleryFragment extends Fragment {
 
     private GalleryViewModel galleryViewModel;
     private FragmentGalleryBinding binding;
+    private View rootView;
+    private TableLayout ll;
+    public String[] allDo;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_gallery, container,
+        rootView = inflater.inflate(R.layout.fragment_gallery, container,
                 false);
 
-        TableLayout ll = (TableLayout) rootView
-                .findViewById(R.id.tableLayoutBloodPressure);
+        ll = (TableLayout) rootView.findViewById(R.id.tableLayoutBloodPressure);
 
-        String[] allDo = new String[]{"Выпить синюю таблетку после обеда",
-                "В 12:00 замерить давление", "16:00 Поесть и замерить пульс"};
+        String address = "http://ec2-3-15-18-180.us-east-2.compute.amazonaws.com:5000/recommendation";
 
-        for (int i = 0; i < 3; i++) {
-            TableRow tbrow = new TableRow(getActivity().getApplicationContext());
-            tbrow.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
 
-            TextView tv1 = new TextView(getActivity().getApplicationContext());
-            tv1.setLayoutParams(new TableRow.LayoutParams(
-                    TableRow.LayoutParams.MATCH_PARENT,
-                    TableRow.LayoutParams.WRAP_CONTENT));
-            tv1.setId(i);
-
-            tv1.setText(allDo[i]);
-            tbrow.addView(tv1);
-
-            ll.addView(tbrow, new TableLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
+        GetUrlContentTask asnyc = new GetUrlContentTask();
+        asnyc.execute();
 
         return rootView;
+    }
 
-        // return inflater.inflate(R.layout.fragment_gallery, container, false);
+    class GetUrlContentTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            for (int i = 0; i < allDo.length; i++) {
+                TableRow tbrow = new TableRow(getActivity().getApplicationContext());
+                tbrow.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        /*galleryViewModel =
-                new ViewModelProvider(this).get(GalleryViewModel.class);
+                TextView tv1 = new TextView(getActivity().getApplicationContext());
+                tv1.setLayoutParams(new TableRow.LayoutParams(
+                        TableRow.LayoutParams.MATCH_PARENT,
+                        TableRow.LayoutParams.WRAP_CONTENT));
+                tv1.setId(i);
 
-        binding = FragmentGalleryBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+                tv1.setText(allDo[i]);
+                tbrow.addView(tv1);
 
-        final ListView listTodo = binding.listTodo;
+                ll.addView(tbrow, new TableLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
+        }
 
-        final String[] catNames = new String[] {
-                "Рыжик", "Барсик", "Мурка"
-        };
-        final List<String> listElementsArrayList = new ArrayList<>(Arrays.asList(catNames));
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                String urlString = "http://ec2-3-15-18-180.us-east-2.compute.amazonaws.com:5000/recommendation";
+                String response = performGetCall(urlString, new HashMap<String, String>() {
+                    private static final long serialVersionUID = 1L;
+                    {
+                        put("Accept", "application/json");
+                        put("Content-Type", "application/json");
+                    }
+                });
+                allDo = response.split(",");
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
 
-        final ArrayAdapter<String> adapter = new ArrayAdapter(GalleryFragment.this, android.R.layout.simple_list_item_1, listElementsArrayList);
-        listTodo.setAdapter(adapter);
+    public String performGetCall(String requestURL,
+                                  HashMap<String, String> getDataParams) {
+        URL url;
+        String response = "";
+        try {
+            url = new URL(requestURL);
 
-        return root;*/
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            String test = conn.getResponseMessage();
+
+            int responseCode = conn.getResponseCode();
+
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        conn.getInputStream()));
+                while ((line = br.readLine()) != null) {
+                    response += line;
+                }
+                /*String[] allDo = response.split(",");
+                TableLayout ll = (TableLayout) rootView.findViewById(R.id.tableLayoutBloodPressure);
+                for (int i = 0; i < 3; i++) {
+                    TableRow tbrow = new TableRow(getActivity().getApplicationContext());
+                    tbrow.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                    TextView tv1 = new TextView(getActivity().getApplicationContext());
+                    tv1.setLayoutParams(new TableRow.LayoutParams(
+                            TableRow.LayoutParams.MATCH_PARENT,
+                            TableRow.LayoutParams.WRAP_CONTENT));
+                    tv1.setId(i);
+
+                    tv1.setText(allDo[i]);
+                    tbrow.addView(tv1);
+
+                    ll.addView(tbrow, new TableLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                }*/
+            } else {
+                response = "";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     @Override

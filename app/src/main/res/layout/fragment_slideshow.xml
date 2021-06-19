@@ -7,11 +7,11 @@
     tools:context=".ui.slideshow.SlideshowFragment">
 
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/deviceName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="93dp"
-        android:layout_marginEnd="14dp"
+        android:layout_marginEnd="12dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
@@ -23,11 +23,20 @@
         android:id="@+id/textView4"
         android:layout_width="0dp"
         android:layout_height="46dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="1dp"
+        android:layout_marginStart="19dp"
         android:text="Название тонометра"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName2"
-        app:layout_constraintEnd_toStartOf="@+id/editTextTextPersonName2"
+        app:layout_constraintBaseline_toBaselineOf="@+id/deviceName"
+        app:layout_constraintEnd_toStartOf="@+id/deviceName"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="Сохранить"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
