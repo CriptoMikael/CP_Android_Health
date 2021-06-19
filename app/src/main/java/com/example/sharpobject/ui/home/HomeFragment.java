@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -24,8 +25,14 @@ import com.example.sharpobject.databinding.FragmentHomeBinding;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,6 +46,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -120,6 +128,9 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 sendAllData();
+                Toast toast = Toast.makeText(getActivity(), "Показания переданы врачу", Toast.LENGTH_LONG);
+                toast.show();
+                clearFields();
             }
         });
 
@@ -227,6 +238,13 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private void clearFields() {
+        highValue.setText("0");
+        lowValue.setText("0");
+        pulse.setText("0");
+        activity.setText("");
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected void sendAllData() {
         try {
@@ -246,7 +264,8 @@ public class HomeFragment extends Fragment {
 
         json = new JSONObject();
         try {
-            json.put("date", timeStamp);
+            //json.put("date", timeStamp*1000);
+            json.put("date", 1624099204);
             json.put("modelName", modelString);
             json.put("highValue", highString);
             json.put("lowValue", lowString);
@@ -255,77 +274,31 @@ public class HomeFragment extends Fragment {
         } catch (Exception e) {
             System.out.println(e);
         }
-
-        /*try {
-            URL url = new URL("https://ec2-3-15-18-180.us-east-2.compute.amazonaws.com:5000/transactions");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Accept", "application/json");
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.connect();
-
-            DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-            os.writeBytes(URLEncoder.encode(json.toString(), "UTF-8"));
-
-            os.flush();
-            os.close();
-
-            Log.i("STATUS", String.valueOf(conn.getResponseCode()));
-            Log.i("MSG" , conn.getResponseMessage());
-
-            conn.disconnect();
-        } catch (Exception e) {
-            System.out.println(e);
-        }*/
-
         try {
             HttpTask asnyc = new HttpTask();
             asnyc.execute();
         } catch (Exception e) {
             System.out.println(e);
         }
-
-
     }
 
     class HttpTask extends AsyncTask<String, String, String> {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-
         }
 
         @Override
         protected String doInBackground(String... params) {
-
-            URL url = null;
             try {
-                url = new URL("https://ec2-3-15-18-180.us-east-2.compute.amazonaws.com:5000/transactions");
-                HttpURLConnection connection = null;
-
-                connection = (HttpURLConnection) url.openConnection();
-                int code = connection.getResponseCode();
-                //connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setDoInput(true);
-                connection.setDoOutput(true);
-                connection.setRequestProperty("Content-Type", "application/json");
-
-                if (json != null) {
-                    DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-                    outputStream.writeBytes(json.toString());
-                    outputStream.flush();
-                    outputStream.close();
-                }
-
-                int responseCode = connection.getResponseCode();
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+                    String urlString = "http://ec2-3-15-18-180.us-east-2.compute.amazonaws.com:5000/write_data";
+                    String response = performPostCall(urlString, new HashMap<String, String>() {
+                        private static final long serialVersionUID = 1L;
+                        {
+                            put("Accept", "application/json");
+                            put("Content-Type", "application/json");
+                        }
+                    });
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -337,5 +310,44 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public String performPostCall(String requestURL,
+                                  HashMap<String, String> postDataParams) {
+
+        URL url;
+        String response = "";
+        try {
+            url = new URL(requestURL);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            String str = json.toString();
+            byte[] outputBytes = str.getBytes("UTF-8");
+            OutputStream os = conn.getOutputStream();
+            os.write(outputBytes);
+
+            int responseCode = conn.getResponseCode();
+
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        conn.getInputStream()));
+                while ((line = br.readLine()) != null) {
+                    response += line;
+                }
+            } else {
+                response = "";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 }
