@@ -73,6 +73,7 @@ public class GalleryFragment extends Fragment {
                         ViewGroup.LayoutParams.WRAP_CONTENT));
 
                 TextView tv1 = new TextView(getActivity().getApplicationContext());
+                tv1.setTextSize(24);
                 tv1.setLayoutParams(new TableRow.LayoutParams(
                         TableRow.LayoutParams.MATCH_PARENT,
                         TableRow.LayoutParams.WRAP_CONTENT));
